@@ -1,0 +1,60 @@
+Vagrant + nginx на порту 82 — покрокове виконання
+
+1️ Завантаження та встановлення Vagrant:
+- Завантаж `.msi` (для Windows) або `.deb` (для Linux) з офіційного сайту:
+  https://developer.hashicorp.com/vagrant/install
+- Обери архітектуру: AMD64
+
+2️ Перевірка встановлення: (powershell)
+vagrant --version
+
+3️ Створення проєктної папки (PowerShell):
+mkdir C:\Users\svitlana\vagrant-nginx
+cd C:\Users\svitlana\vagrant-nginx
+
+4️ Ініціалізація Vagrant з образом Ubuntu (powershell): 
+vagrant init ubuntu/bionic64
+
+5️ Редагування Vagrantfile (powershell):
+notepad Vagrantfile
+
+Замінити вміст файлу на:
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/bionic64"
+
+  # Public network — доступ з браузера хоста
+  config.vm.network "public_network"
+
+  # Provisioning: установка nginx і зміна порту на 82
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update
+    apt-get install -y nginx
+    sed -i 's/listen 80 default_server;/listen 82 default_server;/' /etc/nginx/sites-available/default
+    sed -i 's/listen \\[::\\]:80 default_server;/listen [::]:82 default_server;/' /etc/nginx/sites-available/default
+    systemctl restart nginx
+  SHELL
+end
+
+6️ Запуск віртуальної машини з provisioning (powershell):
+vagrant up --provision
+
+> При запиті вибрати мережевий інтерфейс:
+1) MediaTek Wi-Fi 6 MT7921 Wireless LAN Card
+
+7️ Перевірка nginx у віртуальній машині (bash VB):
+vagrant ssh
+ip a
+
+IP-адреса на інтерфейсі enp0s8, наприклад:
+192.168.0.246
+
+8️ Перевірка у браузері (Windows):
+http://192.168.0.246:82
+
+Результат: Сторінка “Welcome to nginx!” успішно відкривається
+
+Vagrant START:
+vagrant up
+
+Vagrant STOP:
+vagrant halt
