@@ -8,10 +8,10 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/bionic64"
 
-  # Публічна мережа (вибереш свою мережу, напр. Wi-Fi)
+  # Public network (choose your network, e.g. Wi-Fi)
   config.vm.network "public_network"
 
-  # Провізіонінг: установка nginx і зміна порту на 82
+  # Provisioning: installing nginx and changing the port to 82
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
     apt-get install -y nginx
